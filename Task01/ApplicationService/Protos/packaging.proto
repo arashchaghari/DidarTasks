@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option csharp_namespace = "Subscription";
+
+service PackagingGrpcService {
+  rpc CheckAccessLimit(CheckAccessRequest) returns (CheckAccessResponse);
+  rpc UpdateSubscription(UpdateSubscriptionRequest) returns (UpdateSubscriptionResponse);
+  rpc GetSubscriptionLevel(GetSubscriptionLevelRequest) returns (GetSubscriptionLevelResponse);
+}
+
+message GetSubscriptionLevelRequest {
+  string userId = 1;
+}
+
+message GetSubscriptionLevelResponse {
+  string subscriptionLevel = 1;
+}
+
+message CheckAccessRequest {
+  string userId = 1;
+  string feature = 2;
+}
+
+message CheckAccessResponse {
+  bool allowed = 1;
+  string message = 2;
+}
+
+message UpdateSubscriptionRequest {
+  string userId = 1;
+  string subscriptionLevel = 2;
+}
+
+message UpdateSubscriptionResponse {
+  bool success = 1;
+  string message = 2;
+}

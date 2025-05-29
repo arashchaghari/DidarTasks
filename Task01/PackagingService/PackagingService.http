@@ -1,0 +1,6 @@
+@PackagingService_HostAddress = http://localhost:5013
+
+GET {{PackagingService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
