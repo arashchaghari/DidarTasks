@@ -4,7 +4,7 @@ using PackagingService.Core.Domain.Contracts;
 using Subscription;
 using System.Text.Json;
 
-namespace PackagingService.Services;
+namespace PackagingService.Core.Application;
 
 public class PackagingServiceImpl(IRepository repo, ICacheProvider cache) : PackagingGrpcService.PackagingGrpcServiceBase
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Subscription;
 
-namespace PackagingService;
+namespace ApplicationService;
 
 public class PackagingServiceHealthCheck(PackagingGrpcService.PackagingGrpcServiceClient client) : IHealthCheck
 {

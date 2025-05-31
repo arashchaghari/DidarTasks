@@ -1,6 +1,6 @@
+using ApplicationService;
 using ApplicationService.Services;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using PackagingService;
 using Subscription;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,6 +1,6 @@
 using Common;
+using PackagingService.Core.Application;
 using PackagingService.Core.Domain.Contracts;
-using PackagingService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

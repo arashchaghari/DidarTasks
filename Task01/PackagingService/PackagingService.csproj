@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Protos\packaging.proto" />
+    <None Remove="Core\Application\Protos\packaging.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,11 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\packaging.proto" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Core\Application\" />
+    <Protobuf Include="Core\Application\Protos\packaging.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
