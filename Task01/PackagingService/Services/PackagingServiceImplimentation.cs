@@ -1,44 +1,58 @@
 using Grpc.Core;
+using Mapster;
+using PackagingService.Core.Domain.Contracts;
 using Subscription;
+using System.Text.Json;
 
 namespace PackagingService.Services;
 
-public class PackagingServiceImpl : PackagingGrpcService.PackagingGrpcServiceBase
+public class PackagingServiceImpl(IRepository repo, ICacheProvider cache) : PackagingGrpcService.PackagingGrpcServiceBase
 {
-    private static readonly Dictionary<string, string> _userSubscriptions = [];
-
-    public override Task<CheckAccessResponse> CheckAccessLimit(CheckAccessRequest request, ServerCallContext context)
+    public override async Task<CheckAccessResponse> CheckAccessLimit(CheckAccessRequest request, ServerCallContext context)
     {
-        _userSubscriptions.TryGetValue(request.UserId, out var level);
+        var cacheKey = $"AccessLimit_{request.UserId}";
 
-        var allowed = level switch
+        var cachedData = await cache.Get(cacheKey);
+        if (cachedData != null)
         {
-            "Premium" => true,
-            "Basic" => request.Feature != "PremiumFeature",
-            _ => false,
-        };
+            var cachedResponse = JsonSerializer.Deserialize<CheckAccessResponse>(cachedData);
+            if (cachedResponse != null)
+                return cachedResponse;
+        }
 
-        return Task.FromResult(new CheckAccessResponse
-        {
-            Allowed = allowed,
-            Message = allowed ? "Access granted" : "Access denied"
-        });
+        var result = await repo.CheckAccessLimit(request.UserId);
+        var adapted = result.Adapt<CheckAccessResponse>();
+        await cache.Set(cacheKey, JsonSerializer.Serialize(adapted));
+
+        return adapted;
+    }
+    public override async Task<UpdateSubscriptionResponse> UpdateSubscription(UpdateSubscriptionRequest request, ServerCallContext context)
+    {
+        var result = await repo.UpdateSubscription(request.Adapt<UpdateSubscriptionDto>());
+
+        var cacheKey = $"AccessLimit_{request.UserId}";
+        await cache.Remove(cacheKey);
+
+        return result.Adapt<UpdateSubscriptionResponse>();
     }
 
-    public override Task<UpdateSubscriptionResponse> UpdateSubscription(UpdateSubscriptionRequest request, ServerCallContext context)
+    public override async Task<GetSubscriptionLevelResponse> GetSubscriptionLevel(GetSubscriptionLevelRequest request, ServerCallContext context)
     {
-        _userSubscriptions[request.UserId] = request.SubscriptionLevel;
+        var cacheKey = $"SubscriptionLevel_{request.UserId}";
 
-        return Task.FromResult(new UpdateSubscriptionResponse
+        var cachedData = await cache.Get(cacheKey);
+        if (cachedData != null)
         {
-            Success = true,
-            Message = "Subscription updated"
-        });
-    }
+            var cachedResponse = JsonSerializer.Deserialize<GetSubscriptionLevelResponse>(cachedData);
+            if (cachedResponse != null)
+                return cachedResponse;
+        }
 
-    public override Task<GetSubscriptionLevelResponse> GetSubscriptionLevel(GetSubscriptionLevelRequest request, ServerCallContext context)
-    {
-        _userSubscriptions.TryGetValue(request.UserId, out var level);
-        return Task.FromResult(new GetSubscriptionLevelResponse { SubscriptionLevel = level ?? "None" });
+        var result = await repo.GetSubscriptionLevel(request.UserId);
+        var adapted = result.Adapt<GetSubscriptionLevelResponse>();
+
+        await cache.Set(cacheKey, JsonSerializer.Serialize(adapted));
+
+        return adapted;
     }
 }

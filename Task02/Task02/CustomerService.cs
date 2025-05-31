@@ -17,6 +17,7 @@ public class CustomerRepository(AppDbContext dbContext) : ICustomerRepository
     }
 }
 
+// Application layer
 public class CustomerService(ICustomerRepository repo, ILogger<CustomerService> logger)
 {
     public bool AddCustomer()
@@ -36,7 +37,7 @@ public class CustomerService(ICustomerRepository repo, ILogger<CustomerService> 
 
 // Or can using CQRS pattern to add customer to the database instead of service (command)
 
-// Changes:
+// List of Changes:
 // Dependency Injection
 // Logging Abstraction
 // Return Type

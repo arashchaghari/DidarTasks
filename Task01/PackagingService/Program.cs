@@ -1,3 +1,5 @@
+using Common;
+using PackagingService.Core.Domain.Contracts;
 using PackagingService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddGrpc();
+builder.Services.AddSingleton<ICacheProvider, RedisCacheService>();
 
 var app = builder.Build();
 
